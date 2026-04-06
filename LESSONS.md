@@ -48,6 +48,8 @@
 <!-- Proactive hints Brain has surfaced -->
 <!-- Format: [date] category: observation -->
 
+- [2026-04-06] INCOMPLETE_FEATURE: Photo gallery has no purchase or licensing flow. — Users can share photos, but there's no way to actually buy or license them yet. Add a product card showing price, licensing options, and a purchase button to turn browsing into revenue.
+
 ## Lessons Learned
 <!-- Mistakes made and fixed — never repeat these -->
 <!-- Format: [date] what broke → what fixed it -->
