@@ -32,7 +32,7 @@ export default function Navbar() {
   return (
     <nav role="navigation" aria-label="Main navigation" className="sticky top-0 z-50" style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)' }} aria-label="Aperture Guild home">
+        <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)', textDecoration: 'none' }} aria-label="Aperture Guild home">
           <Camera size={22} style={{ color: 'var(--color-primary)' }} aria-hidden />
           Aperture Guild
         </Link>
