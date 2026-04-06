@@ -36,6 +36,8 @@
 
 - [2026-04-06] Wrap the app logo in the nav component with a React Router Link to '/' so clicking it returns to the → src/components/Navbar.tsx, src/App.tsx
 
+- [2026-04-06] The first when you load the website you are greeted with an AI generated photo, which one of the cam → src/pages/Home.tsx
+
 ## Brain Observations
 <!-- Proactive hints Brain has surfaced -->
 <!-- Format: [date] category: observation -->
