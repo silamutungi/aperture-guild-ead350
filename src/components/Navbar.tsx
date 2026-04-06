@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Camera } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
@@ -8,6 +8,7 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [authed, setAuthed] = useState(false)
+  const drawerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isSupabaseConfigured) return
@@ -15,6 +16,15 @@ export default function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setAuthed(Boolean(session)))
     return () => subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   async function handleSignOut() {
     if (isSupabaseConfigured) await supabase.auth.signOut()
@@ -32,7 +42,7 @@ export default function Navbar() {
   return (
     <nav role="navigation" aria-label="Main navigation" className="sticky top-0 z-50" style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)', textDecoration: 'none' }} aria-label="Aperture Guild home">
+        <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)' }} aria-label="Aperture Guild home">
           <Camera size={22} style={{ color: 'var(--color-primary)' }} aria-hidden />
           Aperture Guild
         </Link>
@@ -61,12 +71,14 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger button */}
+        {/* Mobile hamburger button — hidden at md and above */}
         <button
-          className="md:hidden w-11 h-11 flex items-center justify-center"
+          className="md:hidden w-11 h-11 flex items-center justify-center rounded-lg transition-colors"
+          style={{ color: 'var(--color-text)' }}
           onClick={() => setOpen(v => !v)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
+          aria-controls="mobile-drawer"
         >
           {open ? (
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -83,27 +95,42 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile: backdrop overlay */}
+      {/* Mobile: backdrop overlay — hidden at md and above */}
       <div
-        className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         style={{ background: 'rgba(28, 26, 24, 0.48)' }}
         onClick={() => setOpen(false)}
         aria-hidden="true"
       />
 
-      {/* Mobile: slide-in drawer */}
+      {/* Mobile: slide-in drawer from left — hidden at md and above */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col transform transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ background: 'var(--color-bg-surface)', borderLeft: '1px solid var(--color-border)' }}
+        id="mobile-drawer"
+        ref={drawerRef}
+        className={`fixed top-0 left-0 h-full w-72 z-50 md:hidden flex flex-col transform transition-transform duration-300 ease-in-out ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{ background: 'var(--color-bg-surface)', borderRight: '1px solid var(--color-border)' }}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation menu"
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-6 h-16" style={{ borderBottom: '1px solid var(--color-border)' }}>
-          <span className="font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)' }}>Menu</span>
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 font-bold"
+            style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)' }}
+          >
+            <Camera size={18} style={{ color: 'var(--color-primary)' }} aria-hidden />
+            Aperture Guild
+          </Link>
           <button
-            className="w-11 h-11 flex items-center justify-center"
+            className="w-11 h-11 flex items-center justify-center rounded-lg"
+            style={{ color: 'var(--color-text-secondary)' }}
             onClick={() => setOpen(false)}
             aria-label="Close menu"
           >
@@ -114,14 +141,14 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Drawer nav links */}
+        {/* Drawer nav links — Ink color, Flame active state */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {navLinks.map(link => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setOpen(false)}
-              className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
+              className="h-11 flex items-center px-4 text-sm rounded-lg transition-colors"
               style={{
                 color: isActive(link.to) ? 'var(--color-primary)' : 'var(--color-text)',
                 background: isActive(link.to) ? 'rgba(200,75,17,0.08)' : 'transparent',
@@ -133,21 +160,24 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Drawer auth section */}
-        <div className="flex flex-col gap-2 px-4 pt-4 mt-auto pb-8" style={{ borderTop: '1px solid var(--color-border)', marginTop: 'auto' }}>
+        {/* Drawer auth section — pinned to bottom */}
+        <div
+          className="flex flex-col gap-2 px-4 pt-4 pb-8 mt-auto"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
           {authed || !isSupabaseConfigured ? (
             <>
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg"
+                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
                 style={{ color: 'var(--color-text)' }}
               >
                 Dashboard
               </Link>
               <button
                 onClick={() => { setOpen(false); handleSignOut() }}
-                className="h-11 text-left px-4 text-sm font-medium rounded-lg"
+                className="h-11 text-left px-4 text-sm font-medium rounded-lg transition-colors"
                 style={{ color: 'var(--color-text)' }}
               >
                 Sign Out
@@ -158,7 +188,7 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg"
+                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
                 style={{ color: 'var(--color-text)' }}
               >
                 Sign In
