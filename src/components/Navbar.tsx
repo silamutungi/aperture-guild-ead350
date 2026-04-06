@@ -61,12 +61,13 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger button */}
+        {/* Mobile hamburger button — hidden at md and above */}
         <button
           className="md:hidden w-11 h-11 flex items-center justify-center"
           onClick={() => setOpen(v => !v)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
+          aria-controls="mobile-nav-drawer"
         >
           {open ? (
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -83,7 +84,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile: backdrop overlay */}
+      {/* Mobile: backdrop overlay — hidden at md and above */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ background: 'rgba(28, 26, 24, 0.48)' }}
@@ -91,8 +92,9 @@ export default function Navbar() {
         aria-hidden="true"
       />
 
-      {/* Mobile: slide-in drawer */}
+      {/* Mobile: slide-in drawer — hidden at md and above */}
       <div
+        id="mobile-nav-drawer"
         className={`fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col transform transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
         style={{ background: 'var(--color-bg-surface)', borderLeft: '1px solid var(--color-border)' }}
         role="dialog"
@@ -114,14 +116,14 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Drawer nav links */}
+        {/* Drawer nav links — Ink color, Flame active state */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {navLinks.map(link => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setOpen(false)}
-              className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
+              className="h-11 flex items-center px-4 text-sm rounded-lg transition-colors"
               style={{
                 color: isActive(link.to) ? 'var(--color-primary)' : 'var(--color-text)',
                 background: isActive(link.to) ? 'rgba(200,75,17,0.08)' : 'transparent',
@@ -134,20 +136,23 @@ export default function Navbar() {
         </div>
 
         {/* Drawer auth section */}
-        <div className="flex flex-col gap-2 px-4 pt-4 mt-auto pb-8" style={{ borderTop: '1px solid var(--color-border)', marginTop: 'auto' }}>
+        <div
+          className="flex flex-col gap-2 px-4 pt-4 pb-8 mt-auto"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
           {authed || !isSupabaseConfigured ? (
             <>
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg"
+                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
                 style={{ color: 'var(--color-text)' }}
               >
                 Dashboard
               </Link>
               <button
                 onClick={() => { setOpen(false); handleSignOut() }}
-                className="h-11 text-left px-4 text-sm font-medium rounded-lg"
+                className="h-11 text-left px-4 text-sm font-medium rounded-lg transition-colors"
                 style={{ color: 'var(--color-text)' }}
               >
                 Sign Out
@@ -158,7 +163,7 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg"
+                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
                 style={{ color: 'var(--color-text)' }}
               >
                 Sign In
@@ -166,7 +171,7 @@ export default function Navbar() {
               <Link
                 to="/signup"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center justify-center text-sm font-semibold rounded-lg"
+                className="h-11 flex items-center justify-center text-sm font-semibold rounded-lg transition-colors"
                 style={{ background: 'var(--color-primary)', color: '#fff' }}
               >
                 List for Free
