@@ -42,6 +42,8 @@
 
 - [2026-04-06] Wrap the app logo in the nav component with a React Router Link to '/' so clicking it returns to the → src/components/Navbar.tsx, src/App.tsx
 
+- [2026-04-06] I don’t see the change. What was done ☑️ or fixed  → src/pages/Home.tsx, src/components/Navbar.tsx, src/index.css
+
 ## Brain Observations
 <!-- Proactive hints Brain has surfaced -->
 <!-- Format: [date] category: observation -->
