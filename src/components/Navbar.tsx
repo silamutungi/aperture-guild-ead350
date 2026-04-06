@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Camera } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
@@ -8,6 +8,7 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [authed, setAuthed] = useState(false)
+  const drawerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isSupabaseConfigured) return
@@ -15,6 +16,15 @@ export default function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setAuthed(Boolean(session)))
     return () => subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   async function handleSignOut() {
     if (isSupabaseConfigured) await supabase.auth.signOut()
@@ -68,6 +78,7 @@ export default function Navbar() {
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           aria-controls="mobile-nav-drawer"
+          style={{ color: 'var(--color-text)' }}
         >
           {open ? (
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -95,6 +106,7 @@ export default function Navbar() {
       {/* Mobile: slide-in drawer — hidden at md and above */}
       <div
         id="mobile-nav-drawer"
+        ref={drawerRef}
         className={`fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col transform transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
         style={{ background: 'var(--color-bg-surface)', borderLeft: '1px solid var(--color-border)' }}
         role="dialog"
@@ -108,6 +120,7 @@ export default function Navbar() {
             className="w-11 h-11 flex items-center justify-center"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
+            style={{ color: 'var(--color-text)' }}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <line x1="3" y1="3" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
