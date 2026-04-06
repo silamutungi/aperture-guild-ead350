@@ -34,6 +34,8 @@
 
 - [2026-04-06] Add a responsive mobile hamburger nav drawer to the site navigation component. Use useState for open → src/components/Navbar.tsx, src/index.css
 
+- [2026-04-06] Wrap the app logo in the nav component with a React Router Link to '/' so clicking it returns to the → src/components/Navbar.tsx, src/App.tsx
+
 ## Brain Observations
 <!-- Proactive hints Brain has surfaced -->
 <!-- Format: [date] category: observation -->
