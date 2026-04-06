@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Camera } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
@@ -8,7 +8,6 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [authed, setAuthed] = useState(false)
-  const drawerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isSupabaseConfigured) return
@@ -17,13 +16,14 @@ export default function Navbar() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Lock body scroll when drawer is open
   useEffect(() => {
-    if (!open) return
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false)
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
     }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    return () => { document.body.style.overflow = '' }
   }, [open])
 
   async function handleSignOut() {
@@ -42,7 +42,12 @@ export default function Navbar() {
   return (
     <nav role="navigation" aria-label="Main navigation" className="sticky top-0 z-50" style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)', textDecoration: 'none' }} aria-label="Aperture Guild home">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-bold"
+          style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)', textDecoration: 'none' }}
+          aria-label="Aperture Guild home"
+        >
           <Camera size={22} style={{ color: 'var(--color-primary)' }} aria-hidden />
           Aperture Guild
         </Link>
@@ -50,7 +55,15 @@ export default function Navbar() {
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map(link => (
-            <Link key={link.to} to={link.to} className="px-4 h-9 flex items-center text-sm font-medium rounded-lg transition-colors" style={{ color: isActive(link.to) ? 'var(--color-primary)' : 'var(--color-text-secondary)', background: isActive(link.to) ? 'rgba(200,75,17,0.08)' : 'transparent' }}>
+            <Link
+              key={link.to}
+              to={link.to}
+              className="px-4 h-9 flex items-center text-sm font-medium rounded-lg transition-colors"
+              style={{
+                color: isActive(link.to) ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                background: isActive(link.to) ? 'rgba(200,75,17,0.08)' : 'transparent',
+              }}
+            >
               {link.label}
             </Link>
           ))}
@@ -71,9 +84,9 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger button — hidden at md and above */}
+        {/* Mobile hamburger button */}
         <button
-          className="md:hidden w-11 h-11 flex items-center justify-center"
+          className="md:hidden w-11 h-11 flex items-center justify-center rounded-lg"
           onClick={() => setOpen(v => !v)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -95,20 +108,27 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile: backdrop overlay — hidden at md and above */}
-      <div
-        className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-        style={{ background: 'rgba(28, 26, 24, 0.48)' }}
-        onClick={() => setOpen(false)}
-        aria-hidden="true"
-      />
+      {/* Mobile backdrop overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          style={{ background: 'rgba(28, 26, 24, 0.6)' }}
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Mobile: slide-in drawer — hidden at md and above */}
+      {/* Mobile slide-in drawer */}
       <div
         id="mobile-nav-drawer"
-        ref={drawerRef}
-        className={`fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col transform transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ background: 'var(--color-bg-surface)', borderLeft: '1px solid var(--color-border)' }}
+        className="fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col"
+        style={{
+          background: 'var(--color-bg-surface)',
+          borderLeft: '1px solid var(--color-border)',
+          transform: open ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
+          visibility: open ? 'visible' : 'hidden',
+        }}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation menu"
@@ -117,7 +137,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-6 h-16" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <span className="font-bold" style={{ color: 'var(--color-text)', fontSize: 'var(--text-headline)' }}>Menu</span>
           <button
-            className="w-11 h-11 flex items-center justify-center"
+            className="w-11 h-11 flex items-center justify-center rounded-lg"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
             style={{ color: 'var(--color-text)' }}
@@ -129,7 +149,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Drawer nav links — Ink color, Flame active state */}
+        {/* Drawer nav links */}
         <div className="flex flex-col gap-1 px-4 pt-4">
           {navLinks.map(link => (
             <Link
@@ -158,14 +178,14 @@ export default function Navbar() {
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
+                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg"
                 style={{ color: 'var(--color-text)' }}
               >
                 Dashboard
               </Link>
               <button
                 onClick={() => { setOpen(false); handleSignOut() }}
-                className="h-11 text-left px-4 text-sm font-medium rounded-lg transition-colors"
+                className="h-11 text-left px-4 text-sm font-medium rounded-lg"
                 style={{ color: 'var(--color-text)' }}
               >
                 Sign Out
@@ -176,7 +196,7 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg transition-colors"
+                className="h-11 flex items-center px-4 text-sm font-medium rounded-lg"
                 style={{ color: 'var(--color-text)' }}
               >
                 Sign In
@@ -184,7 +204,7 @@ export default function Navbar() {
               <Link
                 to="/signup"
                 onClick={() => setOpen(false)}
-                className="h-11 flex items-center justify-center text-sm font-semibold rounded-lg transition-colors"
+                className="h-11 flex items-center justify-center text-sm font-semibold rounded-lg"
                 style={{ background: 'var(--color-primary)', color: '#fff' }}
               >
                 List for Free
