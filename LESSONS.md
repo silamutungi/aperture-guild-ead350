@@ -38,6 +38,8 @@
 
 - [2026-04-06] The first when you load the website you are greeted with an AI generated photo, which one of the cam → src/pages/Home.tsx
 
+- [2026-04-06] Add a responsive mobile hamburger nav drawer to the site navigation component. Use useState for open → src/components/Navbar.tsx, src/index.css
+
 ## Brain Observations
 <!-- Proactive hints Brain has surfaced -->
 <!-- Format: [date] category: observation -->
