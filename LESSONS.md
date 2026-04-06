@@ -44,6 +44,8 @@
 
 - [2026-04-06] I don’t see the change. What was done ☑️ or fixed  → src/pages/Home.tsx, src/components/Navbar.tsx, src/index.css
 
+- [2026-04-06] Add a responsive mobile hamburger nav drawer to the site navigation component. Use useState for open → src/components/Navbar.tsx, src/index.css
+
 ## Brain Observations
 <!-- Proactive hints Brain has surfaced -->
 <!-- Format: [date] category: observation -->
