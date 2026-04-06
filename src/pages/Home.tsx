@@ -30,7 +30,7 @@ export default function Home() {
 
       <section
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1769713569350-8da3473eed3a?ixid=M3w5MTM0MDN8MHwxfHNlYXJjaHwxfHxBJTIwc2xlZWslMjBwaG90b2dyYXBoZXIlMjdzJTIwd29ya3NwYWNlJTIwZmVhdHVyaW5nJTIwYSUyMHByb2Zlc3Npb25hbCUyMGNhfGVufDB8MHx8fDE3NzU0Mzk4NDJ8MA&ixlib=rb-4.1.0&w=1920&h=1080&fit=crop&crop=center&q=80&auto=format)',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1607434472257-d9f8e57a643d?ixid=M3w5MTM0MDN8MHwxfHNlYXJjaHwxfHxmaXJzdCUyMHdoZW4lMjB5b3UlMjBsb2FkJTIwd2Vic2l0ZXxlbnwwfDB8fHwxNzc1NDQxMjU3fDA&ixlib=rb-4.1.0&w=1920&h=1080&fit=crop&crop=center&q=80&auto=format)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
